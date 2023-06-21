@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Party Politician Info</title>
+  <script src="https://unpkg.com/react/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone/babel.min.js" crossorigin></script>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    class Politician {
+      constructor(name, votes, money) {
+        this.name = name;
+        this.votes = votes;
+        this.money = money;
+      }
+    }
+
+    class Party {
+      constructor() {
+        this.politicians = [];
+      }
+
+      addPolitician(politician) {
+        this.politicians.push(politician);
+      }
+
+      findMaxVotesPolitician() {
+        let maxVotes = 0;
+        let maxVotesPolitician = null;
+
+        for (const politician of this.politicians) {
+          if (politician.votes > maxVotes) {
+            maxVotes = politician.votes;
+            maxVotesPolitician = politician;
+          }
+        }
+
+        return maxVotesPolitician;
+      }
+
+      findMaxMoneyPolitician() {
+        let maxMoney = 0;
+        let maxMoneyPolitician = null;
+
+        for (const politician of this.politicians) {
+          if (politician.money > maxMoney) {
+            maxMoney = politician.money;
+            maxMoneyPolitician = politician;
+          }
+        }
+
+        return maxMoneyPolitician;
+      }
+    }
+
+    const PartyPoliticianInfo = () => {
+      const [party, setParty] = useState(new Party());
+      const [politicians, setPoliticians] = useState([]);
+      const [currentPoliticianName, setCurrentPoliticianName] = useState('');
+      const [currentPoliticianVotes, setCurrentPoliticianVotes] = useState(0);
+      const [currentPoliticianMoney, setCurrentPoliticianMoney] = useState(0);
+
+      const handlePoliticianNameChange = (event) => {
+        setCurrentPoliticianName(event.target.value);
+      };
+
+      const handlePoliticianVotesChange = (event) => {
+        setCurrentPoliticianVotes(parseInt(event.target.value));
+      };
+
+      const handlePoliticianMoneyChange = (event) => {
+        setCurrentPoliticianMoney(parseInt(event.target.value));
+      };
+
+      const handleAddPolitician = () => {
+        if (
+          currentPoliticianName.trim() === '' ||
+          isNaN(currentPoliticianVotes) ||
+          isNaN(currentPoliticianMoney)
+        ) {
+          return;
+        }
+
+        const politician = new Politician(
+          currentPoliticianName,
+          currentPoliticianVotes,
+          currentPoliticianMoney
+        );
+        party.addPolitician(politician);
+        const updatedPoliticians = party.politicians.slice();
+        setPoliticians(updatedPoliticians);
+
+        setCurrentPoliticianName('');
+        setCurrentPoliticianVotes(0);
+        setCurrentPoliticianMoney(0);
+      };
+
+      const handleDeletePolitician = (index) => {
+        const updatedPoliticians = [...politicians];
+        updatedPoliticians.splice(index, 1);
+        setPoliticians(updatedPoliticians);
+      };
+
+      const findMaxVotesPolitician = () => {
+        return party.findMaxVotesPolitician();
+      };
+
+      const findMaxMoneyPolitician = () => {
+        return party.findMaxMoneyPolitician();
+      };
+
+      return (
+        <div>
+          <h2>Party Politician Info</h2>
+          <div>
+            <label htmlFor="politicianName">Politician Name:</label>
+            <input
+              type="text"
+              id="politicianName"
+              value={currentPoliticianName}
+              onChange={handlePoliticianNameChange}
+            />
+
+            <label htmlFor="politicianVotes">Votes:</label>
+            <input
+              type="number"
+              id="politicianVotes"
+              value={currentPoliticianVotes}
+              onChange={handlePoliticianVotesChange}
+            />
+
+            <label htmlFor="politicianMoney">Money:</label>
+            <input
+              type="number"
+              id="politicianMoney"
+              value={currentPoliticianMoney}
+              onChange={handlePoliticianMoneyChange}
+            />
+
+            <button onClick={handleAddPolitician}>Add Politician</button>
+          </div>
+
+          <h3>All Politicians:</h3>
+          {politicians.map((politician, index) => (
+            <div key={index}>
+              <p>Name: {politician.name}</p>
+              <p>Votes: {politician.votes}</p>
+              <p>Money: {politician.money}</p>
+              <button onClick={() => handleDeletePolitician(index)}>Delete Politician</button>
+            </div>
+          ))}
+
+          <h3>Max Votes Politician:</h3>
+          {findMaxVotesPolitician() && (
+            <div>
+              <p>Name: {findMaxVotesPolitician().name}</p>
+              <p>Votes: {findMaxVotesPolitician().votes}</p>
+              <p>Money: {findMaxVotesPolitician().money}</p>
+            </div>
+          )}
+
+          <h3>Max Money Politician:</h3>
+          {findMaxMoneyPolitician() && (
+            <div>
+              <p>Name: {findMaxMoneyPolitician().name}</p>
+              <p>Votes: {findMaxMoneyPolitician().votes}</p>
+              <p>Money: {findMaxMoneyPolitician().money}</p>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    ReactDOM.render(<PartyPoliticianInfo />, document.getElementById('root'));
+  </script>
+</body>
+
+</html>
